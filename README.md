@@ -15,7 +15,7 @@ After the simulation, the average time, turnaround time, and response time of al
 3. Run 'python main.py' on the command line
 
 # Tentative Architecture (Draft)
-
+-
  - Simulator
     - functions
         - main loop of application
