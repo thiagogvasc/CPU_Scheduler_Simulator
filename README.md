@@ -11,7 +11,6 @@ After the simulation, the average time, turnaround time, and response time of al
 
 # Architecture Draft
 
--------------------------------------------------------------
 - Simulator
     - functions
         - main loop of application
@@ -20,8 +19,8 @@ After the simulation, the average time, turnaround time, and response time of al
     - data
         - reference to processes in the system
         - reference to the type of scheduler used
--------------------------------------------------------------
--------------------------------------------------------------
+
+
 - Scheduler
     - functions
         - use the corresponding scheduling algorithm
@@ -33,8 +32,8 @@ After the simulation, the average time, turnaround time, and response time of al
         - reference to processes in the system
         - reference to the currently executing process
         - reference to the ready queue
--------------------------------------------------------------
--------------------------------------------------------------
+
+
 - Process
     - functions
         - update state according to provided simulation data
