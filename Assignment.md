@@ -101,7 +101,7 @@ The grading will be based on the following
 Table of results comparison (SJF, FCFS, MLFQ)
 
 
-                            SJF         FCFS            MLFQ
+                            SJF         FCFS            MLFQ\
 CPU utilization                         85.34%
 Avg Waiting time (Tw)                   185.25
 Avg Turnaround time (Ttr)               521.37
@@ -112,7 +112,7 @@ Avg Response time (Tr)                  24.37
 |------------------------------|-----------------------|-------------------------|
   |      Tw   |   Ttr  |   Tr    |   Tw  |   Ttr  |   Tr     |     Tw    |  Ttr    | Tr   | 
 |------------|--------|----------|-------|--------|-----------|---------|----------|-------|
-|P1 |                           170     395     0
+|P1 | | | |                       170|     395|     0| | | | 
 P2                              164     591     5
 P3                              165     557     9
 P4                              164     648     17
