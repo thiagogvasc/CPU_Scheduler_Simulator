@@ -10,9 +10,9 @@ After the simulation, the average time, turnaround time, and response time of al
 
 # How to test
 
-1. Clone the repository at 
+1. Clone the repository at https://github.com/thiagogvasc/CPU_Scheduler_Simulator.git
 2. Make sure Python is installed and added to the path environment variable
-3. Run 'python main.py' in the command line
+3. Run 'python main.py' on the command line
 
 # Tentative Architecture (Draft)
 
