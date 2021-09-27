@@ -9,7 +9,7 @@ The assignment consists in buildling a simulator, in which three cpu scheduling 
 After the simulation, the average time, turnaround time, and response time of all processes will be comprared between the three algorithms
 
 
-# Architecture Draft
+# Tentative Architecture (Draft)
 
 - Simulator
     - functions
