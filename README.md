@@ -8,6 +8,11 @@ This is an assignment for the Operating Systems (COP4610) class at Florida Atlan
 The assignment consists in buildling a simulator, in which three cpu scheduling algorithm will be run.
 After the simulation, the average time, turnaround time, and response time of all processes will be comprared between the three algorithms
 
+# How to test
+
+1. Clone the repository at 
+2. Make sure Python is installed and added to the path environment variable
+3. Run 'python main.py' in the command line
 
 # Tentative Architecture (Draft)
 
