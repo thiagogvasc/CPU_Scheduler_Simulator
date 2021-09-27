@@ -26,11 +26,6 @@ class Process:
         self.turnaroundTime = 0
         self.responseTime = 0
 
-    def setState(self, newState):
-        self.previousState = self.state
-        self.state = newState
-        print(str(self.pid) + ' ' + self.previousState.name + ' TO ' + self.state.name)
-
     def update(self):
 
         print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + self.currentCycleType + ' state: ', self.state.name)
@@ -82,3 +77,8 @@ class Process:
         ### Track turnaround time
         if self.state != State.TERMINATED:
             self.turnaroundTime += 1
+          
+   def setState(self, newState):
+        self.previousState = self.state
+        self.state = newState
+        print(str(self.pid) + ' ' + self.previousState.name + ' TO ' + self.state.name)
