@@ -16,7 +16,7 @@ After the simulation, the average time, turnaround time, and response time of al
 
 # Tentative Architecture (Draft)
 
-# - Simulator
+ - Simulator
     - functions
         - main loop of application
         - calculate final results
