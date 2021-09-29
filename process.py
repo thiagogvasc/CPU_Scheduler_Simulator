@@ -77,8 +77,8 @@ class Process:
         ### Track turnaround time
         if self.state != State.TERMINATED:
             self.turnaroundTime += 1
-          
-   def setState(self, newState):
+
+    def setState(self, newState):
         self.previousState = self.state
         self.state = newState
         print(str(self.pid) + ' ' + self.previousState.name + ' TO ' + self.state.name)

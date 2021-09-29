@@ -7,6 +7,8 @@ class Scheduler:
         self.readyQueue = list(processes)
         self.currentProcess = None
 
+        #self.currentProcessRunningTime = 0
+
     def update(self):
         print('---------------------------------------------------------------------------------------------------')
 
