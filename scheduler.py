@@ -7,15 +7,25 @@ class Scheduler:
         self.readyQueue = list(processes)
         self.currentProcess = None
 
-        #self.currentProcessRunningTime = 0
+        self.algorithm = None
+
+        #self.currentProcessRunningTime = 0    move this to process class
 
     def update(self):
         print('---------------------------------------------------------------------------------------------------')
 
+
+
+        ### if shouldContextSwitch(self.readyQueue....)
+        ###     self.currentPRocess = self.algorithm.getNextProcess(self.readyQueue)
+
+
+
         # Dispach a process in the ready queue if there is none running
         if self.currentProcess is None: 
-            if len(self.readyQueue) != 0:
-                self.currentProcess = self.readyQueue.pop(0)
+            if self.readyQueue: # if not empty
+                #self.currentProcess = self.readyQueue.pop(0)
+                self.currentProcess = self.algorithm.getNextProcess(self.readyQueue)
                 self.currentProcess.setState(State.RUNNING)
 
 
@@ -24,8 +34,9 @@ class Scheduler:
         #   from the ready queue if it is not emtpy
         else:
             if self.currentProcess.state == State.WAITING and self.currentProcess.previousState == State.RUNNING:
-                if len(self.readyQueue) != 0:
-                    self.currentProcess = self.readyQueue.pop(0)
+                if self.readyQueue: # if not empty
+                    #self.currentProcess = self.readyQueue.pop(0)
+                    self.currentProcess = self.algorithm.getNextProcess(self.readyQueue)
                     print('P' + str(self.currentProcess.pid) + ' removed from ready queue and dispached to cpu')
                     self.currentProcess.setState(State.RUNNING)
                 else:
@@ -43,8 +54,9 @@ class Scheduler:
             #### ((FIX)) Move this section to the else statement above
             if process.state == State.TERMINATED and process.previousState == State.RUNNING:
                 #print('P' + str(process.pid) + ' TERMINATED')
-                if len(self.readyQueue) != 0:
-                    self.currentProcess = self.readyQueue.pop(0)
+                if self.readyQueue: ### if not empty
+                    #self.currentProcess = self.readyQueue.pop(0)
+                    self.currentProcess = self.algorithm.getNextProcess(self.readyQueue)
                     self.currentProcess.setState(State.RUNNING)
 
         ### Print current running process

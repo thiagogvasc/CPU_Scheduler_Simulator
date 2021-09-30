@@ -2,6 +2,9 @@ from scheduler import Scheduler
 from process import Process
 from process import State
 
+from algorithm import FirstComeFirstServe
+from algorithm import ShortestJobFirst
+
 
 class Simulator:
     def __init__(self, data):
@@ -16,6 +19,7 @@ class Simulator:
             i += 1
 
         self.scheduler = Scheduler(self.processes)
+        self.scheduler.algorithm = ShortestJobFirst()
 
     def allTerminated(self):
         for process in self.processes:
