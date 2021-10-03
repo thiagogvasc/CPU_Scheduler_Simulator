@@ -1,79 +1,179 @@
+from process import State
 from process import Process
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 
 
-class IAlgorithm(ABC):
+class SchedulingAlgorithm(ABC):
+    def __init__(self, scheduler): 
+        self.scheduler = scheduler
 
+    # This method will be called whenever there is no process currently running
     @abstractmethod
-    def shouldContextSwitch(self) -> bool:
+    def noProcessRunning(self) -> None:
+        pass
+
+    # This method will be called whenever a new process is activated
+    @abstractmethod
+    def processActivated(self, process) -> None:
+        pass
+
+    # This method will be called when the time quanta expires for that process
+    @abstractmethod
+    def timeQuantaExpired(self, process) -> None:
+        pass
+
+    # This method will be called when a process has to wait for I/O
+    @abstractmethod
+    def processWaiting(self, process) -> None:
         pass
     
+    # This method will be called when a process has finished waiting for I/O
     @abstractmethod
-    def getNextProcess(self) -> Process:  
+    def processFinishedIO(self, process) -> None:
         pass
 
-### Non-Preemptive
-class FirstComeFirstServe(IAlgorithm):
-    def __init__(self):
+    # This method will be called when a process terminates execution
+    @abstractmethod
+    def processTerminated(self, process) -> None:
         pass
 
 
-    ### Issue: on preemtive algorithms it doenst work without an update method
+class FirstComeFirstServe(SchedulingAlgorithm):
+    def __init__(self, scheduler):
+        super().__init__(scheduler)
 
-    ### Update method will only check if the system needs to do a context switch
-    def shouldContextSwitch(self):
+        self.readyQueue = []
+
+    # This method will be called whenever there is no process currently running
+    def noProcessRunning(self) -> None:
+        if self.readyQueue: # if not empty
+            nextProcess = self.readyQueue.pop(0)
+            self.scheduler.dispach(nextProcess)
+
+    # This method will be called whenever a new process is activated
+    def processActivated(self, process) -> None:
+        self.readyQueue.append(process)
+
+     # This method will be called when the time quanta expires for that process
+    def timeQuantaExpired(self, process) -> None:
         pass
 
-    def getNextProcess(self, readyQueue):       #### maybe also pass the currentRunningProcess
-        if readyQueue: # if not empty
-            return readyQueue.pop(0)
+     # This method will be called when a process has to wait for I/O
+    def processWaiting(self, process) -> None:
+        if self.readyQueue: # if not empty
+            nextProcess = self.readyQueue.pop(0)
+            self.scheduler.dispach(nextProcess)
+            print('P' + str(self.scheduler.currentProcess.pid) + ' removed from ready queue and dispached to cpu')
         else:
-            return None
+            self.scheduler.currentProcess = None
+    
+    # This method will be called when a process has finished waiting for I/O
+    def processFinishedIO(self, process) -> None:
+        if process not in self.readyQueue:
+            self.readyQueue.append(process)
+            print('P' + str(process.pid) + ' appended in ready queue')
 
 
-### Non-Preemptive
-class ShortestJobFirst(IAlgorithm):
-    def __init__(self):
+    # This method will be called when a process terminates execution
+    def processTerminated(self, process) -> None:
+        #print('P' + str(process.pid) + ' TERMINATED')
+        if self.readyQueue: ### if not empty
+            nextProcess = self.readyQueue.pop(0)
+            self.scheduler.dispach(nextProcess)
+        else:
+            self.scheduler.currentProcess = None
+
+
+class ShortestJobFirst(SchedulingAlgorithm):
+    def __init__(self, scheduler):
+        super().__init__(scheduler)
+
+        self.readyQueue = []
+
+    # This method will be called whenever there is no process currently running
+    def noProcessRunning(self) -> None:
+        if self.readyQueue: # if not empty
+            nextProcess = self.__chooseLowestBurstTime()
+            if nextProcess:
+                self.scheduler.dispach(nextProcess)
+
+    # This method will be called whenever a new process is activated
+    def processActivated(self, process) -> None:
+        self.readyQueue.append(process)
+
+     # This method will be called when the time quanta expires for that process
+    def timeQuantaExpired(self, process) -> None:
         pass
 
-    def shouldContextSwitch(self):
-        pass
+     # This method will be called when a process has to wait for I/O
+    def processWaiting(self, process) -> None:
+        if self.readyQueue: # if not empty
+            nextProcess = self.__chooseLowestBurstTime()
+            if nextProcess:
+                self.scheduler.dispach(nextProcess)
+                print('P' + str(self.scheduler.currentProcess.pid) + ' removed from ready queue and dispached to cpu')
+        else:
+            self.scheduler.currentProcess = None
+    
+    # This method will be called when a process has finished waiting for I/O
+    def processFinishedIO(self, process) -> None:
+        if process not in self.readyQueue:
+            self.readyQueue.append(process)
+            print('P' + str(process.pid) + ' appended in ready queue')
 
-    def getNextProcess(self, readyQueue):
-        if readyQueue:
-            lowestBurstTimeProcess = readyQueue[0]
-            for i, process in enumerate(readyQueue):
+
+    # This method will be called when a process terminates execution
+    def processTerminated(self, process) -> None:
+        #print('P' + str(process.pid) + ' TERMINATED')
+        if self.readyQueue: ### if not empty
+            nextProcess = self.__chooseLowestBurstTime()
+            if nextProcess:
+                self.scheduler.dispach(nextProcess)
+        else:
+            self.scheduler.currentProcess = None
+
+    def __chooseLowestBurstTime(self) -> Process:
+        if self.readyQueue:
+            lowestBurstTimeProcess = self.readyQueue[0]
+            index = 0
+            for i, process in enumerate(self.readyQueue):
                 if process.simulationData[process.currentCycle] < lowestBurstTimeProcess.simulationData[lowestBurstTimeProcess.currentCycle]:
                     lowestBurstTimeProcess = process
-                    return readyQueue.pop(i)
-            return readyQueue.pop(0)
+                    index = i
+                    #return self.readyQueue.pop(i)
+            return self.readyQueue.pop(index)
         else:
             return None
 
 
-### Preemptive
-class MultilevelFeedbackQueue(IAlgorithm):
-    def __init__(self):
-        self.priorityQueue1 = []
-        self.timeQuantaQueue1 = 5
 
-        self.priorityQueue2 = []
-        self.timeQuantaQueue2 = 10
+class MultilevelFeedbackQueue(SchedulingAlgorithm):
+    def __init__(self, scheduler):
+        super().__init__(scheduler)
 
-        ### Queue 3 uses FCFS 
-        self.priorityQueue3 = []
-        self.algorithmQueue3 = FirstComeFirstServe()
 
-        ####All processes enter first queue 1. 
-        # If time quantum (Tq) expires before CPU burst is complete,
-        #  the process is downgraded to next lower priority queue. Processes are
-        #  not downgraded when preempted by a higher queue level process.
-        #  Once a process has been downgraded, it will not be upgraded.
+    # This method will be called whenever there is no process currently running
+    def noProcessRunning(self) -> None:
+        pass
 
-    def shouldContextSwitch(self):
+    # This method will be called whenever a new process is activated
+    def processActivated(self, process) -> None:
+        pass
+
+     # This method will be called when the time quanta expires for that process
+    def timeQuantaExpired(self, process) -> None:
+        pass
+
+     # This method will be called when a process has to wait for I/O
+    def processWaiting(self, process) -> None:
+        pass
+    
+    # This method will be called when a process has finished waiting for I/O
+    def processFinishedIO(self, process) -> None:
         pass
 
 
-    def getNextProcess(self, readyQueue):
-
+    # This method will be called when a process terminates execution
+    def processTerminated(self, process) -> None:
         pass

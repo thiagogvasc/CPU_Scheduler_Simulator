@@ -9,20 +9,18 @@ from algorithm import ShortestJobFirst
 class Simulator:
     def __init__(self, data):
         self.data = data
-        self.processes = []
-
 
         ### Instantiate all processes with the corresponding simulation data
-        i = 1 # Process id
-        for processSimulationData in data:
-            self.processes.append(Process(i, processSimulationData))
-            i += 1
+        self.scheduler = Scheduler()
+        self.scheduler.algorithm = ShortestJobFirst(self.scheduler)
 
-        self.scheduler = Scheduler(self.processes)
-        self.scheduler.algorithm = ShortestJobFirst()
+        for i, processSimulationData in enumerate(data):
+            self.scheduler.addProcess(Process(i + 1, processSimulationData))
 
+
+    # Check if all processes terminated
     def allTerminated(self):
-        for process in self.processes:
+        for process in self.scheduler.processes:
             if process.state != State.TERMINATED:
                 return False
         return True
@@ -30,7 +28,7 @@ class Simulator:
     ### Simulation Engine
     def run(self):
 
-        ### Main loop
+        # Stop only if all processes terminated
         while not self.allTerminated():
             self.scheduler.update() 
 
