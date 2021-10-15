@@ -18,9 +18,9 @@ class SchedulingAlgorithm(ABC):
     def processActivated(self, process) -> None:
         pass
 
-    # This method will be called when the time quanta expires for that process
+    # This method will be called at every iteration to handle the time quanta
     @abstractmethod
-    def timeQuantaExpired(self, process) -> None:
+    def handleTimeQuanta(self, process) -> None:
         pass
 
     # This method will be called when a process has to wait for I/O
@@ -55,8 +55,8 @@ class FirstComeFirstServe(SchedulingAlgorithm):
     def processActivated(self, process) -> None:
         self.readyQueue.append(process)
 
-     # This method will be called when the time quanta expires for that process
-    def timeQuantaExpired(self, process) -> None:
+    # This method will be called at every iteration to handle the time quanta   
+    def handleTimeQuanta(self, process) -> None:
         pass
 
      # This method will be called when a process has to wait for I/O
@@ -102,8 +102,8 @@ class ShortestJobFirst(SchedulingAlgorithm):
     def processActivated(self, process) -> None:
         self.readyQueue.append(process)
 
-     # This method will be called when the time quanta expires for that process
-    def timeQuantaExpired(self, process) -> None:
+    # This method will be called at every iteration to handle the time quanta
+    def handleTimeQuanta(self, process) -> None:
         pass
 
      # This method will be called when a process has to wait for I/O
@@ -146,24 +146,98 @@ class ShortestJobFirst(SchedulingAlgorithm):
         else:
             return None
 
+class RoundRobin(SchedulingAlgorithm):
+    def __init__(self, scheduler):
+        super().__init__(scheduler)
+
+        self.readyQueue = []
+
+        self.timeQuanta = 5
+
+    # This method will be called whenever there is no process currently running
+    def noProcessRunning(self) -> None:
+        if self.readyQueue:
+            newProcess = self.readyQueue.pop(0)
+            self.scheduler.dispach(newProcess)
+
+    # This method will be called whenever a new process is activated
+    def processActivated(self, process) -> None:
+        self.readyQueue.append(process)
+
+    # This method will be called at every iteration to handle the time quanta
+    def handleTimeQuanta(self, process) -> None:
+        if process:
+            if process.timeRunning >= 5:
+                self.readyQueue.append(process)
+                if self.readyQueue:
+                    newProcess = self.readyQueue.pop(0)
+                    self.scheduler.dispach(newProcess)
+
+     # This method will be called when a process has to wait for I/O
+    def processWaiting(self, process) -> None:
+        if self.readyQueue:
+            newProcess = self.readyQueue.pop(0)
+            self.scheduler.dispach(newProcess)
+        ### REFACTOR LATER
+        else:
+            self.scheduler.currentProcess = None
+    
+    # This method will be called when a process has finished waiting for I/O
+    def processFinishedIO(self, process) -> None:
+        ### DONT NEED IF STATEMENT
+        ### REFACTOR LATER
+        if process not in self.readyQueue:
+            self.readyQueue.append(process)
+            print('P' + str(process.pid) + ' appended in ready queue')
+
+
+    # This method will be called when a process terminates execution
+    def processTerminated(self, process) -> None:
+        if self.readyQueue: ### if not empty
+            nextProcess = self.readyQueue.pop(0)
+            self.scheduler.dispach(nextProcess)
+        else:
+            self.scheduler.currentProcess = None
+
 
 
 class MultilevelFeedbackQueue(SchedulingAlgorithm):
     def __init__(self, scheduler):
         super().__init__(scheduler)
 
+        self.readyQueue_1 = []
+        self.algorithm_1 = RoundRobin()
+        self.algorithm_1.timeQuanta = 5
+
+
+        self.readyQueue_2 = []
+        self.algorithm_2 = RoundRobin()
+        self.algorithm_2.timeQuanta = 10
+
+
+        self.readyQueue_3 = []
+        self.algorithm_3 = FirstComeFirstServe()
+
 
     # This method will be called whenever there is no process currently running
     def noProcessRunning(self) -> None:
-        pass
+        if self.readyQueue_1: # if not empty
+            self.algorithm_1.noProcessRunning()
+        else:
+            if self.readyQueue_2:
+                self.algorithm_2.noProcessRunning()
+            else:
+                if self.readyQueue_3:
+                    self.algorithm_3.noProcessRunning()
 
     # This method will be called whenever a new process is activated
     def processActivated(self, process) -> None:
         pass
 
-     # This method will be called when the time quanta expires for that process
-    def timeQuantaExpired(self, process) -> None:
-        pass
+    # This method will be called at every iteration to handle the time quanta
+    def handleTimeQuanta(self, process) -> None:
+        self.algorithm_1.handleTimeQuanta()
+        self.algorithm_2.handleTimeQuanta()
 
      # This method will be called when a process has to wait for I/O
     def processWaiting(self, process) -> None:

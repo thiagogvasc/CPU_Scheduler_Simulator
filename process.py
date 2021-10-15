@@ -26,7 +26,14 @@ class Process:
         self.turnaroundTime = 0
         self.responseTime = 0
 
+
+        self.timeRunning = 0
+
     def update(self):
+        if self.state == State.RUNNING:
+            self.timeRunning += 1
+        else:
+            self.timeRunning = 0
 
         print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + self.currentCycleType + ' state: ', self.state.name)
 

@@ -11,6 +11,10 @@ class Scheduler:
         #self.currentProcessRunningTime = 0    move this to process class
 
     def update(self):
+
+        self.algorithm.handleTimeQuanta(self.currentProcess)
+
+
         # If there is no process currently running
         if self.currentProcess is None:
             self.algorithm.noProcessRunning()
