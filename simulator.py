@@ -2,8 +2,9 @@ from scheduler import Scheduler
 from process import Process
 from process import State
 
-from algorithm import FirstComeFirstServe
-from algorithm import ShortestJobFirst
+from algorithm.first_come_first_serve import FirstComeFirstServe
+from algorithm.shortest_job_first import ShortestJobFirst
+from algorithm.multilevel_feedback_queue import MultilevelFeedbackQueue
 
 
 class Simulator:
