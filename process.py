@@ -1,6 +1,10 @@
 from enum import Enum
 
      
+class Burst(Enum):
+    CPU = 1
+    IO = 2
+
 class State(Enum):
     NEW = 1
     READY = 2
@@ -17,7 +21,7 @@ class Process:
         self.previousState = State.NEW
 
         self.currentCycle = 0
-        self.currentCycleType = 'Burst'
+        self.currentCycleType = Burst.CPU
         self.cycleFinished = False
         self.discreteTimeUnit = 0
 
@@ -35,7 +39,7 @@ class Process:
         else:
             self.timeRunning = 0
 
-        print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + self.currentCycleType + ' state: ', self.state.name)
+        print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + str(self.currentCycleType) + ' state: ', self.state.name)
 
         ### Changes process' state if they are done with burst times or I/O times 
         ### according to the provided simulation data
@@ -47,7 +51,7 @@ class Process:
                 self.previousState = self.state
 
                 # Check if the finished cycle was a burst cycle
-                if self.currentCycleType == 'Burst':
+                if self.currentCycleType == Burst.CPU:
                     print('P' + str(self.pid) + ' done with cpu burst time')
                     if self.currentCycle >= len(self.simulationData) - 1:
                         self.setState(State.TERMINATED)
@@ -68,9 +72,9 @@ class Process:
                 self.discreteTimeUnit += 1
 
         if self.currentCycle % 2 == 0:
-            self.currentCycleType = 'Burst'
+            self.currentCycleType = Burst.CPU
         else:
-            self.currentCycleType = 'I/O'
+            self.currentCycleType = Burst.IO
 
 
         ### Track response time
