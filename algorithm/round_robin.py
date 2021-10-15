@@ -1,4 +1,6 @@
 from algorithm.abstract.scheduling_algorithm import SchedulingAlgorithm
+from process import State
+
 
 class RoundRobin(SchedulingAlgorithm):
     def __init__(self, scheduler):
@@ -22,10 +24,15 @@ class RoundRobin(SchedulingAlgorithm):
     def handleTimeQuanta(self, process) -> None:
         if process:
             if process.timeRunning >= 5:
+                print('QUANTA EXPIRED')
+                self.scheduler.preempt()
                 self.readyQueue.append(process)
                 if self.readyQueue:
                     newProcess = self.readyQueue.pop(0)
                     self.scheduler.dispach(newProcess)
+                    print('dispatched ' + str(newProcess.pid) + ' to cpu')
+                else:
+                    self.scheduler.currentProcess = None
 
      # This method will be called when a process has to wait for I/O
     def processWaiting(self, process) -> None:

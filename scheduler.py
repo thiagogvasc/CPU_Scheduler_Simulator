@@ -11,8 +11,10 @@ class Scheduler:
         #self.currentProcessRunningTime = 0    move this to process class
 
     def update(self):
-
-        self.algorithm.handleTimeQuanta(self.currentProcess)
+        if self.currentProcess:
+            print(self.currentProcess.pid)
+        else:
+            print('NO PROCESS RUNNING')
 
 
         # If there is no process currently running
@@ -42,11 +44,17 @@ class Scheduler:
         for process in self.processes:
             process.update() # add more boolean variables to make sure results are calculated properly
 
-
+        self.algorithm.handleTimeQuanta(self.currentProcess)
+        
     # Dispach a process to the cpu / change process state to RUNNING
     def dispach(self, process):
         self.currentProcess = process
         self.currentProcess.setState(State.RUNNING)
+
+    def preempt(self):
+        if self.currentProcess:
+            self.currentProcess.preempt()
+            self.currentProcess.setState(State.READY)
 
     # Activate a process
     def addProcess(self, process):

@@ -34,7 +34,7 @@ class MultilevelFeedbackQueue(SchedulingAlgorithm):
 
     # This method will be called whenever a new process is activated
     def processActivated(self, process) -> None:
-        pass
+        self.readyQueue_1.append(process)
 
     # This method will be called at every iteration to handle the time quanta
     def handleTimeQuanta(self, process) -> None:
@@ -43,7 +43,16 @@ class MultilevelFeedbackQueue(SchedulingAlgorithm):
 
      # This method will be called when a process has to wait for I/O
     def processWaiting(self, process) -> None:
-        pass
+        if self.readyQueue_1: # if not empty
+            self.algorithm_1.noProcessRunning()
+        else:
+            if self.readyQueue_2:
+                self.algorithm_2.noProcessRunning()
+            else:
+                if self.readyQueue_3:
+                    self.algorithm_3.noProcessRunning()
+                else:
+                    self.scheduler.currentProcess = None
     
     # This method will be called when a process has finished waiting for I/O
     def processFinishedIO(self, process) -> None:

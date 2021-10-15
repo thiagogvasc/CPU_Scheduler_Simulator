@@ -17,6 +17,8 @@ class Process:
         self.pid = pid
         self.simulationData = simulationData
 
+        self.priority = 1 # default
+
         self.state = State.READY # Assuming the process is ready once it's initiated
         self.previousState = State.NEW
 
@@ -49,6 +51,8 @@ class Process:
             if self.discreteTimeUnit == self.simulationData[self.currentCycle]:
 
                 self.previousState = self.state
+                
+                self.timeRunning = 0
 
                 # Check if the finished cycle was a burst cycle
                 if self.currentCycleType == Burst.CPU:
@@ -93,3 +97,6 @@ class Process:
         self.previousState = self.state
         self.state = newState
         print(str(self.pid) + ' ' + self.previousState.name + ' TO ' + self.state.name)
+
+    def preempt(self):
+        pass

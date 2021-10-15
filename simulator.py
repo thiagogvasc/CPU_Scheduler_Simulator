@@ -5,6 +5,7 @@ from process import State
 from algorithm.first_come_first_serve import FirstComeFirstServe
 from algorithm.shortest_job_first import ShortestJobFirst
 from algorithm.multilevel_feedback_queue import MultilevelFeedbackQueue
+from algorithm.round_robin import RoundRobin
 
 
 class Simulator:
@@ -13,7 +14,7 @@ class Simulator:
 
         ### Instantiate all processes with the corresponding simulation data
         self.scheduler = Scheduler()
-        self.scheduler.algorithm = ShortestJobFirst(self.scheduler)
+        self.scheduler.algorithm = RoundRobin(self.scheduler)
 
         for i, processSimulationData in enumerate(data):
             self.scheduler.addProcess(Process(i + 1, processSimulationData))
