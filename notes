@@ -1,0 +1,4 @@
+use the scheduler to synchornize process state
+its going to manage all processes
+
+scheduling/algorithm class will submit state change requests to the scheduler class

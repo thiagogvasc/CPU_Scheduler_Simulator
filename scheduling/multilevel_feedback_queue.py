@@ -1,6 +1,6 @@
-from algorithm.abstract.scheduling_algorithm import SchedulingAlgorithm
-from algorithm.round_robin import RoundRobin
-from algorithm.first_come_first_serve import FirstComeFirstServe 
+from scheduling.abstract.scheduling_algorithm import SchedulingAlgorithm
+from scheduling.round_robin import RoundRobin
+from scheduling.first_come_first_serve import FirstComeFirstServe 
 
 
 class MultilevelFeedbackQueue(SchedulingAlgorithm):

@@ -1,4 +1,4 @@
-from algorithm.abstract.scheduling_algorithm import SchedulingAlgorithm
+from scheduling.abstract.scheduling_algorithm import SchedulingAlgorithm
 from process import State
 
 

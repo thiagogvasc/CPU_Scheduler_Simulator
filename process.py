@@ -1,5 +1,7 @@
 from enum import Enum
 
+import time
+
      
 class Burst(Enum):
     CPU = 1
@@ -25,6 +27,7 @@ class Process:
         self.currentCycle = 0
         self.currentCycleType = Burst.CPU
         self.cycleFinished = False
+        self.cycleStarted = False
         self.discreteTimeUnit = 0
 
 
@@ -35,20 +38,34 @@ class Process:
 
         self.timeRunning = 0
 
+
+        ### Control delta time
+        self.initialTime = 0
+        self.elapsedTime = 0
+
     def update(self):
+        ### Control delta time
+        if self.initialTime == 0:
+            self.initialTime = time.time()
+        else:
+            self.elapsedTime = time.time() - self.initialTime
+
+
         if self.state == State.RUNNING:
-            self.timeRunning += 1
+            self.timeRunning += 1 
         else:
             self.timeRunning = 0
 
-        print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + str(self.currentCycleType) + ' state: ', self.state.name)
+        #print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + str(self.currentCycleType) + ' state: ', self.state.name + ' tw: ' + str(self.totalWaitingTime))
 
         ### Changes process' state if they are done with burst times or I/O times 
         ### according to the provided simulation data
         if (self.state == State.WAITING or self.state == State.RUNNING):
 
+            self.discreteTimeUnit += 1
+        
             # check if current burst/io cycle is finished
-            if self.discreteTimeUnit == self.simulationData[self.currentCycle]:
+            if self.discreteTimeUnit >= self.simulationData[self.currentCycle]:
 
                 self.previousState = self.state
                 
@@ -72,8 +89,6 @@ class Process:
             if self.cycleFinished:
                 self.discreteTimeUnit = 0
                 self.cycleFinished = False
-            else:
-                self.discreteTimeUnit += 1
 
         if self.currentCycle % 2 == 0:
             self.currentCycleType = Burst.CPU
@@ -87,16 +102,21 @@ class Process:
 
         ### Track waiting time
         if self.state == State.READY:
-            self.totalWaitingTime += 1
+            pass
+            #self.totalWaitingTime += 1
 
         ### Track turnaround time
         if self.state != State.TERMINATED:
             self.turnaroundTime += 1
 
+
+        print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + str(self.currentCycleType) + ' state: ', self.state.name + ' tw: ' + str(self.totalWaitingTime))
+
     def setState(self, newState):
         self.previousState = self.state
         self.state = newState
         print(str(self.pid) + ' ' + self.previousState.name + ' TO ' + self.state.name)
+
 
     def preempt(self):
         pass
