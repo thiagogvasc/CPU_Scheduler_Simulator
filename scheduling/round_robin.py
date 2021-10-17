@@ -21,7 +21,8 @@ class RoundRobin():
 
         # Keep track of processes doing I/O
         if hasToDoIO(self.cpu.currentProcess):
-            self.doingIO.append(self.cpu.currentProcess)
+            if self.cpu.currentProcess not in self.doingIO:
+                self.doingIO.append(self.cpu.currentProcess)
 
         # If CPU is idle, then select next process from the ready queue
         if CPU_Idle(self.cpu.currentProcess):
