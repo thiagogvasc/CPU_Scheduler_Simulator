@@ -5,8 +5,8 @@ from cpu import CPU
 
 from scheduling.first_come_first_serve import FirstComeFirstServe
 from scheduling.shortest_job_first import ShortestJobFirst
+from scheduling.round_robin import RoundRobin
 # from scheduling.multilevel_feedback_queue import MultilevelFeedbackQueue
-# from scheduling.round_robin import RoundRobin
 
 
 class Simulator:
