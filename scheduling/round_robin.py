@@ -1,6 +1,7 @@
-
-
-from scheduling.utils.functions import processWaiting
+from scheduling.utils.functions import CPU_Idle
+from scheduling.utils.functions import getFirstFromQueue
+from scheduling.utils.functions import finishedIO
+from scheduling.utils.functions import hasToDoIO
 
 
 class RoundRobin():
@@ -10,58 +11,34 @@ class RoundRobin():
         self.readyQueue = []
         self.doingIO = []
 
+        self.timeQuanta = 5
+
     def update(self):
-        pass
+        if self.cpu.currentProcess:
+            print(self.cpu.currentProcess.pid)
+        else:
+            print('NO PROCESS RUNNING')
+
+        # Keep track of processes doing I/O
+        if hasToDoIO(self.cpu.currentProcess):
+            self.doingIO.append(self.cpu.currentProcess)
+
+        # If CPU is idle, then select next process from the ready queue
+        if CPU_Idle(self.cpu.currentProcess):
+            print('CPU IDLE')
+            self.cpu.dispach(getFirstFromQueue(self.readyQueue))
+        else:
+            if self.cpu.currentProcess.timeRunning >= self.timeQuanta:
+                preemptedProcess = self.cpu.preempt()
+                self.readyQueue.append(preemptedProcess)
+                self.cpu.dispach(getFirstFromQueue(self.readyQueue))
+
+        # If process finished doing I/O, then move it to the ready queue
+        for i, process in enumerate(self.doingIO):
+            if finishedIO(process):
+                self.doingIO.pop(i)
+                self.readyQueue.append(process)
+        
 
     def addProcess(self, process):
         self.readyQueue.append(process)
-
-    # # This method will be called whenever there is no process currently running
-    # def noProcessRunning(self) -> None:
-    #     if self.readyQueue:
-    #         newProcess = self.readyQueue.pop(0)
-    #         self.scheduler.dispach(newProcess)
-
-    # # This method will be called whenever a new process is activated
-    # def processActivated(self, process) -> None:
-    #     self.readyQueue.append(process)
-
-    # # This method will be called at every iteration to handle the time quanta
-    # def handleTimeQuanta(self, process) -> None:
-    #     if process:
-    #         if process.timeRunning >= 5:
-    #             print('QUANTA EXPIRED')
-    #             self.scheduler.preempt()
-    #             self.readyQueue.append(process)
-    #             if self.readyQueue:
-    #                 newProcess = self.readyQueue.pop(0)
-    #                 self.scheduler.dispach(newProcess)
-    #                 print('dispatched ' + str(newProcess.pid) + ' to cpu')
-    #             else:
-    #                 self.scheduler.currentProcess = None
-
-    #  # This method will be called when a process has to wait for I/O
-    # def processWaiting(self, process) -> None:
-    #     if self.readyQueue:
-    #         newProcess = self.readyQueue.pop(0)
-    #         self.scheduler.dispach(newProcess)
-    #     ### REFACTOR LATER
-    #     else:
-    #         self.scheduler.currentProcess = None
-    
-    # # This method will be called when a process has finished waiting for I/O
-    # def processFinishedIO(self, process) -> None:
-    #     ### DONT NEED IF STATEMENT
-    #     ### REFACTOR LATER
-    #     if process not in self.readyQueue:
-    #         self.readyQueue.append(process)
-    #         print('P' + str(process.pid) + ' appended in ready queue')
-
-
-    # # This method will be called when a process terminates execution
-    # def processTerminated(self, process) -> None:
-    #     if self.readyQueue: ### if not empty
-    #         nextProcess = self.readyQueue.pop(0)
-    #         self.scheduler.dispach(nextProcess)
-    #     else:
-    #         self.scheduler.currentProcess = None
