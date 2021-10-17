@@ -21,6 +21,8 @@ class Simulator:
             self.scheduling.addProcess(process)
             self.processes.append(process)
 
+        self.time = 0
+
 
     # Check if all processes terminated
     def allTerminated(self):
@@ -35,7 +37,29 @@ class Simulator:
         # Stop only if all processes terminated
         while not self.allTerminated():
             print('-----------------------------------------')
+            print('Time: ' + str(self.time))
+
+            # Update process state
+            for process in self.processes:
+                process.update()
+
+            # Update algorithm and process state
             self.scheduling.update()     
+
+
+            # Track simulation result
+            for process in self.processes:
+                ### Track waiting time
+                if process.state == State.READY:
+                    process.totalWaitingTime += 1
+
+                ### Track turnaround time
+                if process.state != State.TERMINATED:
+                    process.turnaroundTime += 1
+
+                ### Track response time
+                if process.previousState == State.NEW and process.state == State.READY:
+                    process.responseTime += 1
             print('-----------------------------------------')
 
 

@@ -1,9 +1,18 @@
 from process import Process
 from process import State
 
-
 def processWaiting(process: Process) -> bool:
     return process.state == State.WAITING
+
+def hasToDoIO(process: Process) -> bool:
+    if process:
+        if processWaiting(process):
+            return True
+        else:
+            return False
+    else:
+        return False
+
 
 def finishedIO(process: Process) -> bool:
     return process.state == State.READY

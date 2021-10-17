@@ -95,22 +95,7 @@ class Process:
         else:
             self.currentCycleType = Burst.IO
 
-
-        ### Track response time
-        if self.previousState == State.NEW and self.state == State.READY:
-            self.responseTime += 1
-
-        ### Track waiting time
-        if self.state == State.READY:
-            pass
-            #self.totalWaitingTime += 1
-
-        ### Track turnaround time
-        if self.state != State.TERMINATED:
-            self.turnaroundTime += 1
-
-
-        print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + str(self.currentCycleType) + ' state: ', self.state.name + ' tw: ' + str(self.totalWaitingTime))
+        print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + str(self.currentCycleType) + ' state: ', self.state.name + ' tw: ' + str(self.totalWaitingTime) + ' ttr: ' + str(self.turnaroundTime) + ' tr: ' + str(self.responseTime))
 
     def setState(self, newState):
         self.previousState = self.state
