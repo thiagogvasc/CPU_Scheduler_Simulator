@@ -45,6 +45,7 @@ class Simulator:
                 process.update()
 
             self.cpu.printCurrentProcess()
+            
             # Update algorithm and process state
             self.scheduling.update()     
 

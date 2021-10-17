@@ -16,7 +16,7 @@ class FirstComeFirstServe():
         # Keep track of processes doing I/O
         if hasToDoIO(self.cpu.currentProcess):
             if self.cpu.currentProcess not in self.processesDoingIO:
-                self.processesDoingIO.append(self.cpu.currentProcess)
+                self.processesDoingIO.append(self.cpu.currentProcess) 
 
         # If CPU is idle, then select next process from the ready queue
         if CPU_Idle(self.cpu.currentProcess):
@@ -31,3 +31,4 @@ class FirstComeFirstServe():
     
     def addProcess(self, process):
         self.readyQueue.append(process)
+
