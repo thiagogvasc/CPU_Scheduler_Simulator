@@ -101,7 +101,3 @@ class Process:
         self.previousState = self.state
         self.state = newState
         print(str(self.pid) + ' ' + self.previousState.name + ' TO ' + self.state.name)
-
-
-    def preempt(self):
-        pass
