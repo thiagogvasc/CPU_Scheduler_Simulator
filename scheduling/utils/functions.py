@@ -34,5 +34,28 @@ def getFirstFromQueue(readyQueue: list) -> Process:
         return None
 
 def getShortesBurstFromQueue(readyQueue: list) -> Process:
-    pass
+    if readyQueue:
+        lowestBurstTimeProcess = readyQueue[0]
+        index = 0
+        for i, process in enumerate(readyQueue):
+            if process.simulationData[process.currentCycle] < lowestBurstTimeProcess.simulationData[lowestBurstTimeProcess.currentCycle]:
+                lowestBurstTimeProcess = process
+                index = i
+                #return self.readyQueue.pop(i)
+        return readyQueue.pop(index)
+    else:
+        return None
 
+
+# def __chooseLowestBurstTime(self) -> Process:
+#         if self.readyQueue:
+#             lowestBurstTimeProcess = self.readyQueue[0]
+#             index = 0
+#             for i, process in enumerate(self.readyQueue):
+#                 if process.simulationData[process.currentCycle] < lowestBurstTimeProcess.simulationData[lowestBurstTimeProcess.currentCycle]:
+#                     lowestBurstTimeProcess = process
+#                     index = i
+#                     #return self.readyQueue.pop(i)
+#             return self.readyQueue.pop(index)
+#         else:
+#             return None

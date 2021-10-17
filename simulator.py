@@ -4,7 +4,7 @@ from process import State
 from cpu import CPU
 
 from scheduling.first_come_first_serve import FirstComeFirstServe
-# from scheduling.shortest_job_first import ShortestJobFirst
+from scheduling.shortest_job_first import ShortestJobFirst
 # from scheduling.multilevel_feedback_queue import MultilevelFeedbackQueue
 # from scheduling.round_robin import RoundRobin
 
@@ -12,7 +12,7 @@ from scheduling.first_come_first_serve import FirstComeFirstServe
 class Simulator:
     def __init__(self, data):
         self.data = data
-        self.scheduling = FirstComeFirstServe(CPU())
+        self.scheduling = ShortestJobFirst(CPU())
 
         self.processes = []
 
