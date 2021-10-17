@@ -22,3 +22,9 @@ class CPU():
 
     def timeout(self, timeQuanta):
         pass
+
+    def printCurrentProcess(self):
+        if self.currentProcess:
+            print(self.currentProcess.pid)
+        else:
+            print('NO PROCESS RUNNING')

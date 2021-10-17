@@ -12,7 +12,8 @@ from scheduling.multilevel_feedback_queue import MultilevelFeedbackQueue
 class Simulator:
     def __init__(self, data):
         self.data = data
-        self.scheduling = MultilevelFeedbackQueue(CPU())
+        self.cpu = CPU()
+        self.scheduling = MultilevelFeedbackQueue(self.cpu)
 
         self.processes = []
 
@@ -43,6 +44,7 @@ class Simulator:
             for process in self.processes:
                 process.update()
 
+            self.cpu.printCurrentProcess()
             # Update algorithm and process state
             self.scheduling.update()     
 

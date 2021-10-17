@@ -21,10 +21,6 @@ class MultilevelFeedbackQueue():
         self.timeQuanta = 5
 
     def update(self):
-        if self.cpu.currentProcess:
-            print(self.cpu.currentProcess.pid)
-        else:
-            print('NO PROCESS RUNNING')
 
         for process in self.readyQueue_1:
             print(str(process.pid) + ', ', end="")

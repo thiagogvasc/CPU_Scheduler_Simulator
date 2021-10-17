@@ -12,10 +12,6 @@ class ShortestJobFirst():
         self.doingIO = []
  
     def update(self):
-        if self.cpu.currentProcess:
-            print(self.cpu.currentProcess.pid)
-        else:
-            print('NO PROCESS RUNNING')
 
         # Keep track of processes doing I/O
         if hasToDoIO(self.cpu.currentProcess):
