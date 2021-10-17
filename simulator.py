@@ -1,26 +1,32 @@
-from scheduler import Scheduler
+#from scheduler import Scheduler
 from process import Process
 from process import State
+from cpu import CPU
 
-from algorithm import FirstComeFirstServe
-from algorithm import ShortestJobFirst
+from scheduling.first_come_first_serve import FirstComeFirstServe
+# from scheduling.shortest_job_first import ShortestJobFirst
+# from scheduling.multilevel_feedback_queue import MultilevelFeedbackQueue
+# from scheduling.round_robin import RoundRobin
 
 
 class Simulator:
     def __init__(self, data):
         self.data = data
+        self.scheduling = FirstComeFirstServe(CPU())
 
-        ### Instantiate all processes with the corresponding simulation data
-        self.scheduler = Scheduler()
-        self.scheduler.algorithm = ShortestJobFirst(self.scheduler)
+        self.processes = []
 
         for i, processSimulationData in enumerate(data):
-            self.scheduler.addProcess(Process(i + 1, processSimulationData))
+            process = Process(i + 1, processSimulationData)
+            self.scheduling.addProcess(process)
+            self.processes.append(process)
+
+        self.time = 0
 
 
     # Check if all processes terminated
     def allTerminated(self):
-        for process in self.scheduler.processes:
+        for process in self.processes:
             if process.state != State.TERMINATED:
                 return False
         return True
@@ -30,28 +36,53 @@ class Simulator:
 
         # Stop only if all processes terminated
         while not self.allTerminated():
-            self.scheduler.update() 
+            print('-----------------------------------------')
+            print('Time: ' + str(self.time))
+
+            # Update process state
+            for process in self.processes:
+                process.update()
+
+            # Update algorithm and process state
+            self.scheduling.update()     
+
+
+            # Track simulation result
+            for process in self.processes:
+                ### Track waiting time
+                if process.state == State.READY:
+                    process.totalWaitingTime += 1
+
+                ### Track turnaround time
+                if process.state != State.TERMINATED:
+                    process.turnaroundTime += 1
+
+                ### Track response time
+                if process.previousState == State.NEW and process.state == State.READY:
+                    process.responseTime += 1
+            print('-----------------------------------------')
+
 
 
         ### Compute average times after simulation is finished
 
         print('Waiting time------------------------------------------------')
         waitingTimeSum = 0
-        for process in self.scheduler.processes:
+        for process in self.processes:
             print('P' + str(process.pid) + ' ' + str(process.totalWaitingTime))
             waitingTimeSum += process.totalWaitingTime
         print('average: ' + str(waitingTimeSum / 8))
 
         print('Turnaround time----------------------------------------------')
         turnaroundTimeSum = 0
-        for process in self.scheduler.processes:
+        for process in self.processes:
             print('P' + str(process.pid) + ' ' + str(process.turnaroundTime))
             turnaroundTimeSum += process.turnaroundTime
         print('average: ' + str(turnaroundTimeSum / 8))
 
         print('Response time------------------------------------------------')
         responseTimeSum = 0
-        for process in self.scheduler.processes:
+        for process in self.processes:
             print('P' + str(process.pid) + ' ' + str(process.responseTime))
             responseTimeSum += process.responseTime
         print('average: ' + str(responseTimeSum / 8))
