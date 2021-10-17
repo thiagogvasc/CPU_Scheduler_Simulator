@@ -6,13 +6,13 @@ from cpu import CPU
 from scheduling.first_come_first_serve import FirstComeFirstServe
 from scheduling.shortest_job_first import ShortestJobFirst
 from scheduling.round_robin import RoundRobin
-# from scheduling.multilevel_feedback_queue import MultilevelFeedbackQueue
+from scheduling.multilevel_feedback_queue import MultilevelFeedbackQueue
 
 
 class Simulator:
     def __init__(self, data):
         self.data = data
-        self.scheduling = ShortestJobFirst(CPU())
+        self.scheduling = MultilevelFeedbackQueue(CPU())
 
         self.processes = []
 
@@ -61,7 +61,7 @@ class Simulator:
                 if process.previousState == State.NEW and process.state == State.READY:
                     process.responseTime += 1
             print('-----------------------------------------')
-
+            self.time += 1
 
 
         ### Compute average times after simulation is finished

@@ -1,64 +1,120 @@
-# from scheduling.abstract.scheduling_algorithm import SchedulingAlgorithm
-# from scheduling.round_robin import RoundRobin
-# from scheduling.first_come_first_serve import FirstComeFirstServe 
+from scheduling.utils.functions import CPU_Idle
+from scheduling.utils.functions import getFirstFromQueue
+from scheduling.utils.functions import finishedIO
+from scheduling.utils.functions import hasToDoIO
 
 
-# class MultilevelFeedbackQueue(SchedulingAlgorithm):
-#     def __init__(self, scheduler):
-#         super().__init__(scheduler)
+class MultilevelFeedbackQueue():
+    def __init__(self, cpu):
+        self.cpu = cpu
 
-#         self.readyQueue_1 = []
-#         self.algorithm_1 = RoundRobin()
-#         self.algorithm_1.timeQuanta = 5
+        self.readyQueue_1 = []
+        self.timeQuanta_1 = 5
 
+        self.readyQueue_2 = []
+        self.timeQuanta_2 = 10
 
-#         self.readyQueue_2 = []
-#         self.algorithm_2 = RoundRobin()
-#         self.algorithm_2.timeQuanta = 10
+        self.readyQueue_3 = []
 
+        self.doingIO = []
 
-#         self.readyQueue_3 = []
-#         self.algorithm_3 = FirstComeFirstServe()
+        self.timeQuanta = 5
 
+    def update(self):
+        if self.cpu.currentProcess:
+            print(self.cpu.currentProcess.pid)
+        else:
+            print('NO PROCESS RUNNING')
 
-#     # This method will be called whenever there is no process currently running
-#     def noProcessRunning(self) -> None:
-#         if self.readyQueue_1: # if not empty
-#             self.algorithm_1.noProcessRunning()
-#         else:
-#             if self.readyQueue_2:
-#                 self.algorithm_2.noProcessRunning()
-#             else:
-#                 if self.readyQueue_3:
-#                     self.algorithm_3.noProcessRunning()
+        for process in self.readyQueue_1:
+            print(str(process.pid) + ', ', end="")
+        print()
+        for process in self.readyQueue_2:
+            print(str(process.pid) + ', ', end="")
+        print()
+        for process in self.readyQueue_3:
+            print(str(process.pid) + ', ', end="")
+        print()
+        print('doing io: ')
+        for process in self.doingIO:
+            print(str(process.pid) + ', ', end="")
+        print()
 
-#     # This method will be called whenever a new process is activated
-#     def processActivated(self, process) -> None:
-#         self.readyQueue_1.append(process)
+        # Keep track of processes doing I/O
+        if hasToDoIO(self.cpu.currentProcess):
+            if self.cpu.currentProcess not in self.doingIO:
+                self.doingIO.append(self.cpu.currentProcess)
 
-#     # This method will be called at every iteration to handle the time quanta
-#     def handleTimeQuanta(self, process) -> None:
-#         self.algorithm_1.handleTimeQuanta()
-#         self.algorithm_2.handleTimeQuanta()
+        # If CPU is idle, then select next process from the ready queue 1
+        if CPU_Idle(self.cpu.currentProcess):
+            print('CPU IDLE')
+          
+            if self.readyQueue_1:
+                self.cpu.dispach(getFirstFromQueue(self.readyQueue_1))
+            else:
+                if self.readyQueue_2:
+                    self.cpu.dispach(getFirstFromQueue(self.readyQueue_2))   
+                else:
+                    if self.readyQueue_3:
+                        self.cpu.dispach(getFirstFromQueue(self.readyQueue_3))
+        else:
+            if self.cpu.currentProcess.priority < 3:
 
-#      # This method will be called when a process has to wait for I/O
-#     def processWaiting(self, process) -> None:
-#         if self.readyQueue_1: # if not empty
-#             self.algorithm_1.noProcessRunning()
-#         else:
-#             if self.readyQueue_2:
-#                 self.algorithm_2.noProcessRunning()
-#             else:
-#                 if self.readyQueue_3:
-#                     self.algorithm_3.noProcessRunning()
-#                 else:
-#                     self.scheduler.currentProcess = None
-    
-#     # This method will be called when a process has finished waiting for I/O
-#     def processFinishedIO(self, process) -> None:
-#         pass
+                if self.cpu.currentProcess.priority == 1:
+                    if self.cpu.currentProcess.timeRunning >= self.timeQuanta_1:
+                        preemptedProcess = self.cpu.preempt()
+                        if preemptedProcess.priority < 3:
+                            preemptedProcess.priority += 1
+                            print('Reduced priority')
 
+                        if preemptedProcess.priority == 2:
+                            self.readyQueue_2.append(preemptedProcess)
+                        elif preemptedProcess.priority == 3:
+                            self.readyQueue_3.append(preemptedProcess)
 
-#     # This method will be called when a process terminates execution
-#     def processTerminated(self, process) -> None:
-#         pass
+                    
+                        if self.readyQueue_1:
+                            self.cpu.dispach(getFirstFromQueue(self.readyQueue_1))
+                        else:
+                            if self.readyQueue_2:
+                                self.cpu.dispach(getFirstFromQueue(self.readyQueue_2))   
+                            else:
+                                if self.readyQueue_3:
+                                    self.cpu.dispach(getFirstFromQueue(self.readyQueue_3))
+
+                elif self.cpu.currentProcess.priority == 2:
+                    if self.cpu.currentProcess.timeRunning >= self.timeQuanta_1:
+                        preemptedProcess = self.cpu.preempt()
+                        if preemptedProcess.priority < 3:
+                            preemptedProcess.priority += 1
+
+                        if preemptedProcess.priority == 2:
+                            self.readyQueue_2.append(preemptedProcess)
+                        elif preemptedProcess.priority == 3:
+                            self.readyQueue_3.append(preemptedProcess)
+
+                    
+                        if self.readyQueue_1:
+                            self.cpu.dispach(getFirstFromQueue(self.readyQueue_1))
+                        else:
+                            if self.readyQueue_2:
+                                self.cpu.dispach(getFirstFromQueue(self.readyQueue_2))   
+                            else:
+                                if self.readyQueue_3:
+                                    self.cpu.dispach(getFirstFromQueue(self.readyQueue_3))
+
+        # If process finished doing I/O, then move it to the ready queue
+        for i, process in enumerate(self.doingIO):
+            if finishedIO(process):
+                self.doingIO.pop(i)
+
+                if process.priority == 1:
+                    self.readyQueue_1.append(process)
+                elif process.priority == 2:
+                    self.readyQueue_2.append(process)
+                elif process.priority == 3:
+                    self.readyQueue_3.append(process)
+            
+
+    def addProcess(self, process):
+        self.readyQueue_1.append(process)
