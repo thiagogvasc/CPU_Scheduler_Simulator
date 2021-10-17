@@ -5,6 +5,8 @@ class CPU():
     def __init__(self):
         self.currentProcess = None
 
+        self.timeQuanta = None
+
     def dispach(self, process):
         self.currentProcess = process
         if process:
@@ -14,5 +16,10 @@ class CPU():
         if self.currentProcess:
             self.currentProcess.preempt()
             self.currentProcess.setState(State.READY)
-            #self.readyQueue.append(self.currentProcess)
+            preemptedProcess = self.currentProcess
             self.currentProcess = None
+            return preemptedProcess
+        return None
+
+    def timeout(self, timeQuanta):
+        pass
