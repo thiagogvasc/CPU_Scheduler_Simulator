@@ -14,7 +14,6 @@ class CPU():
 
     def preempt(self):
         if self.currentProcess:
-            self.currentProcess.preempt()
             self.currentProcess.setState(State.READY)
             preemptedProcess = self.currentProcess
             self.currentProcess = None
