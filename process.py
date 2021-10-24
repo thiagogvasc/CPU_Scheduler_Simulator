@@ -39,16 +39,16 @@ class Process:
         self.timeRunning = 0
 
 
-        ### Control delta time
-        self.initialTime = 0
-        self.elapsedTime = 0
+        # ### Control delta time
+        # self.initialTime = 0
+        # self.elapsedTime = 0
 
     def update(self):
-        ### Control delta time
-        if self.initialTime == 0:
-            self.initialTime = time.time()
-        else:
-            self.elapsedTime = time.time() - self.initialTime
+        # ### Control delta time
+        # if self.initialTime == 0:
+        #     self.initialTime = time.time()
+        # else:
+        #     self.elapsedTime = time.time() - self.initialTime
 
 
         if self.state == State.RUNNING:
