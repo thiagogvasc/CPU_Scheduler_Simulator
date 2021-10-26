@@ -5,12 +5,13 @@ class CPU():
     def __init__(self):
         self.currentProcess = None
 
-        self.timeQuanta = None
+        self.contextSwitch = True
 
     def dispach(self, process):
         self.currentProcess = process
         if process:
             self.currentProcess.setState(State.RUNNING)
+            self.contextSwitch = True
 
     def preempt(self):
         if self.currentProcess:
@@ -19,9 +20,6 @@ class CPU():
             self.currentProcess = None
             return preemptedProcess
         return None
-
-    def timeout(self, timeQuanta):
-        pass
 
     def printCurrentProcess(self):
         if self.currentProcess:

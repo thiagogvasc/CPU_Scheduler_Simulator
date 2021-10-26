@@ -9,25 +9,37 @@ class ShortestJobFirst():
         self.cpu = cpu
 
         self.readyQueue = []
-        self.doingIO = []
+        self.processesDoingIO = []
  
     def update(self):
-
         # Keep track of processes doing I/O
         if hasToDoIO(self.cpu.currentProcess):
-            if self.cpu.currentProcess not in self.doingIO:
-                self.doingIO.append(self.cpu.currentProcess)
+            if self.cpu.currentProcess not in self.processesDoingIO:
+                self.processesDoingIO.append(self.cpu.currentProcess)
 
         # If CPU is idle, then select next process from the ready queue
         if CPU_Idle(self.cpu.currentProcess):
-            print('CPU IDLE')
             self.cpu.dispach(getShortesBurstFromQueue(self.readyQueue))
 
         # If process finished doing I/O, then move it to the ready queue
-        for i, process in enumerate(self.doingIO):
+        # Dispach to the CPU if ready queue was empty
+        for i, process in enumerate(self.processesDoingIO):
             if finishedIO(process):
-                self.doingIO.pop(i)
+                self.processesDoingIO.pop(i)
                 self.readyQueue.append(process)
+                if len(self.readyQueue) == 1 and CPU_Idle(self.cpu.currentProcess):
+                    self.cpu.dispach(getShortesBurstFromQueue(self.readyQueue))
     
     def addProcess(self, process):
         self.readyQueue.append(process)
+
+    def printQueues(self):
+        print('Ready Queue: ', end='')
+        for process in self.readyQueue:
+            print('P' + str(process.pid) + '  ', end='')
+        print()
+
+        print('Doing I/O: ', end='')
+        for process in self.processesDoingIO:
+            print('P' + str(process.pid) + '  ', end='')
+        print()

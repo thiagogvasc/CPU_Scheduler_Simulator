@@ -1,7 +1,4 @@
 from enum import Enum
-
-import time
-
      
 class Burst(Enum):
     CPU = 1
@@ -19,15 +16,16 @@ class Process:
         self.pid = pid
         self.simulationData = simulationData
 
-        self.priority = 1 # default
+        self.priority = 1 # default priority
 
         self.state = State.READY # Assuming the process is ready once it's initiated
         self.previousState = State.NEW
 
-        self.currentCycle = 0
-        self.currentCycleType = Burst.CPU
-        self.cycleFinished = False
-        self.cycleStarted = False
+        ### Iterate through the simulation data and track the position
+        self.currentBurst = 0
+        self.currentBurstType = Burst.CPU
+        self.burstFinished = False
+        self.burstStarted = False
         self.discreteTimeUnit = 0
 
 
@@ -37,26 +35,14 @@ class Process:
 
 
         self.timeRunning = 0
-
-
-        # ### Control delta time
-        # self.initialTime = 0
-        # self.elapsedTime = 0
+        self.totalTimeRunning = 0
 
     def update(self):
-        # ### Control delta time
-        # if self.initialTime == 0:
-        #     self.initialTime = time.time()
-        # else:
-        #     self.elapsedTime = time.time() - self.initialTime
-
-
+        #### Track time running
         if self.state == State.RUNNING:
             self.timeRunning += 1 
         else:
             self.timeRunning = 0
-
-        #print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + str(self.currentCycleType) + ' state: ', self.state.name + ' tw: ' + str(self.totalWaitingTime))
 
         ### Changes process' state if they are done with burst times or I/O times 
         ### according to the provided simulation data
@@ -64,40 +50,49 @@ class Process:
 
             self.discreteTimeUnit += 1
         
-            # check if current burst/io cycle is finished
-            if self.discreteTimeUnit >= self.simulationData[self.currentCycle]:
+            # check if current cpu/io Burst is finished
+            if self.discreteTimeUnit >= self.simulationData[self.currentBurst]:
 
                 self.previousState = self.state
                 
                 self.timeRunning = 0
 
-                # Check if the finished cycle was a burst cycle
-                if self.currentCycleType == Burst.CPU:
-                    print('P' + str(self.pid) + ' done with cpu burst time')
-                    if self.currentCycle >= len(self.simulationData) - 1:
+                # Check if the finished Burst was a CPU Burst
+                if self.currentBurstType == Burst.CPU:
+                    if self.currentBurst >= len(self.simulationData) - 1:
                         self.setState(State.TERMINATED)
-                        print('DODODODODONNNNNNNNEEEEEE')
+                        print('P' + str(self.pid) + ' terminated execution')
                     else:
                         self.setState(State.WAITING)
-                else: # Done with IO Cycle
-                    print('P' + str(self.pid) + ' done with IO burst time')
+                else: # Done with IO Burst
                     self.setState(State.READY)
                 
-                self.currentCycle += 1
-                self.cycleFinished = True
+                self.currentBurst += 1
+                self.burstFinished = True
 
-            if self.cycleFinished:
+            if self.burstFinished:
                 self.discreteTimeUnit = 0
-                self.cycleFinished = False
+                self.burstFinished = False
 
-        if self.currentCycle % 2 == 0:
-            self.currentCycleType = Burst.CPU
+        if self.currentBurst % 2 == 0:
+            self.currentBurstType = Burst.CPU
         else:
-            self.currentCycleType = Burst.IO
-
-        print('P' + str(self.pid) + ': ' + 'time: ' + str(self.discreteTimeUnit) + ' cycle: ' + str(self.currentCycle) + ' type: ' + str(self.currentCycleType) + ' state: ', self.state.name + ' tw: ' + str(self.totalWaitingTime) + ' ttr: ' + str(self.turnaroundTime) + ' tr: ' + str(self.responseTime))
+            self.currentBurstType = Burst.IO
 
     def setState(self, newState):
         self.previousState = self.state
         self.state = newState
-        print(str(self.pid) + ' ' + self.previousState.name + ' TO ' + self.state.name)
+
+    ### Print formatted process data
+    def print(self):
+        print('{:20}'.format('P' + str(self.pid)), end='')
+        if self.state == State.TERMINATED:
+            print('{:20}'.format('None'), end='')
+            print('{:20}'.format('None'), end='')  
+            print('{:20}'.format('None'), end='') 
+        else:
+            print('{:20}'.format(self.currentBurstType.name), end='')
+            print('{:20}'.format(str(self.simulationData[self.currentBurst])), end='')  
+            print('{:20}'.format(str(self.simulationData[self.currentBurst] - self.discreteTimeUnit)), end='') 
+        print('{:20}'.format(self.state.name), end='')
+        print()

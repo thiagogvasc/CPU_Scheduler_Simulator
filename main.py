@@ -17,4 +17,4 @@ simulationData = [p1SimulationData, p2SimulationData,
 
 
 simulator = Simulator(simulationData)
-simulator.run()
+simulator.runSimulations()

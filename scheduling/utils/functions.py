@@ -1,6 +1,8 @@
 from process import Process
 from process import State
 
+##### Helper Functions #####
+
 def processWaiting(process: Process) -> bool:
     return process.state == State.WAITING
 
@@ -38,24 +40,10 @@ def getShortesBurstFromQueue(readyQueue: list) -> Process:
         lowestBurstTimeProcess = readyQueue[0]
         index = 0
         for i, process in enumerate(readyQueue):
-            if process.simulationData[process.currentCycle] < lowestBurstTimeProcess.simulationData[lowestBurstTimeProcess.currentCycle]:
+            if process.simulationData[process.currentBurst] < lowestBurstTimeProcess.simulationData[lowestBurstTimeProcess.currentBurst]:
                 lowestBurstTimeProcess = process
                 index = i
                 #return self.readyQueue.pop(i)
         return readyQueue.pop(index)
     else:
         return None
-
-
-# def __chooseLowestBurstTime(self) -> Process:
-#         if self.readyQueue:
-#             lowestBurstTimeProcess = self.readyQueue[0]
-#             index = 0
-#             for i, process in enumerate(self.readyQueue):
-#                 if process.simulationData[process.currentCycle] < lowestBurstTimeProcess.simulationData[lowestBurstTimeProcess.currentCycle]:
-#                     lowestBurstTimeProcess = process
-#                     index = i
-#                     #return self.readyQueue.pop(i)
-#             return self.readyQueue.pop(index)
-#         else:
-#             return None
