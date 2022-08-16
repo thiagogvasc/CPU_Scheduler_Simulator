@@ -1,10 +1,10 @@
-COP 4610 - Programming Assignment
+# COP 4610 - Programming Assignment
 
-Comparison of CPU Schedulers
+## Comparison of CPU Schedulers
 
- Project objective: To learn more about OS scheduling through a hands-on simulation programming experience
+ ### Project objective: To learn more about OS scheduling through a hands-on simulation programming experience
 
-Implement the following 3 CPU scheduling algorithms
+#### Implement the following 3 CPU scheduling algorithms
 
 Simulate and evaluate each with the set of eight processes below.
 Use any programming language. The program listing should be submitted with the report.
@@ -21,7 +21,7 @@ Multilevel Feedback Queue (absolute priority in higher queues)
 
 All processes enter first queue 1. If time quantum (Tq) expires before CPU burst is complete, the process is downgraded to next lower priority queue. Processes are not downgraded when preempted by a higher queue level process. Once a process has been downgraded, it will not be upgraded.
 
-Assumptions:
+#### Assumptions:
 
 All processes are activated at time 0
 Assume that no process waits on I/O devices.
@@ -51,7 +51,7 @@ P8 {4, 14, 5, 33, 6, 51, 14, 73, 16, 87, 6}
 
 Simulation completed for FCFS (see results in table below).
 
-Presentation of results:
+##### Presentation of results:
 
 Write the simulation program in a programming language (such as C, C++, C#, Java, Python, or any other language).
 
